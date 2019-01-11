@@ -1,8 +1,5 @@
 
 
-
-
-
 def parse(file_name):
     
 
@@ -30,18 +27,7 @@ def parse(file_name):
         mid_price = (bid_prices[-1][0] - ask_prices[0][0])/2 + bid_prices[-1][0]
         inbalance = (bid_prices[-1][1] - ask_prices[0][1])/(bid_prices[-1][0] + ask_prices[0][0])
 
-
         data[key] = (ask_prices, bid_prices, mid_price, inbalance)
 
     return data
-
-
-def get_stats(ask_prices, bid_prices):
-
-    bid_prices = []
-    ask_prices = []
-    mid_prices = []
-
-
-
 
