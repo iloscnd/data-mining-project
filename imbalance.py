@@ -15,8 +15,10 @@ def prep_data(data, train_size=0.8):
     imbalances = []
     growths = []
     for key in list(data.keys())[1:]:
-        growths.append(data[prev][2] < data[key][2])
-        imbalances.append(data[prev][3])
+
+        if data[prev][2] != data[key][2]: #only if mid-price changes
+            growths.append(data[prev][2] < data[key][2])
+            imbalances.append(data[prev][3])
         prev = key
 
     
