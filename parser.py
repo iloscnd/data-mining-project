@@ -21,13 +21,13 @@ def parse(file_name):
             ask_prices.append((float(line[i]), float(line[i+1])))
             i += 2
 
-        ask_prices.sort()
         bid_prices.sort()
+        ask_prices.sort()
 
-        mid_price = (bid_prices[-1][0] - ask_prices[0][0])/2 + bid_prices[-1][0]
-        inbalance = (bid_prices[-1][1] - ask_prices[0][1])/(bid_prices[-1][0] + ask_prices[0][0])
+        mid_price = (ask_prices[0][0] - bid_prices[-1][0])/2 + bid_prices[-1][0]
+        inbalance = (ask_prices[0][1] - bid_prices[-1][1])/(bid_prices[-1][1] + ask_prices[0][1])
 
-        data[key] = (ask_prices, bid_prices, mid_price, inbalance)
+        data[key] = (bid_prices, ask_prices, mid_price, inbalance)
 
     return data
 
