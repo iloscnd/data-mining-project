@@ -6,6 +6,7 @@ import numpy as np
 def confusion_matrix(prediction, true_vals, classes=None):
     if classes is None:
         classes = np.unique(true_vals, axis=0)
+        print "Classes: ", classes
      
 
     res = []

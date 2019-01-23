@@ -19,7 +19,7 @@ def main():
 
     print(X)
     print(Y)
-    classifier = MLPClassifier(solver='adam', activation="tanh", alpha=1e-5, hidden_layer_sizes=(100, 100, 100))
+    classifier = MLPClassifier(solver='lbfgs', activation="relu", alpha=1e-4, hidden_layer_sizes=(500, 500, 500), max_iter=5000)
 
     n = len(Y)
     k = int(0.8 * n)
@@ -34,7 +34,7 @@ def main():
 
     Y_check = classifier.predict(X[k:])
 
-    print(classifier.score(X[k:],Y[k:]))
+    print("test: ", classifier.score(X[k:],Y[k:]), ", train: ", classifier.score(X[:k],Y[:k]))
     print(confusion_matrix(Y_check, Y[k:]))
     
 
