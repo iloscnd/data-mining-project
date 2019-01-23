@@ -1,8 +1,7 @@
 import numpy as np
 
-def cut(index, arr):
-    l,r = 0, len(arr) - 1
-    return min(r, max(index,l))
+def fits(index, arr):
+    return index >= 0 and index < len(arr)
 
 
 def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
@@ -12,8 +11,6 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
 
     growths = []
     X = []
-
-    
 
     for i, curr in enumerate(keys[:-1]):
         currKey = curr
@@ -26,20 +23,19 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
             for bid_price, bid_size in reversed(data[currKey][0]):
                 bucket = int(( n_buckets*bucket_size -  (mid_price-bid_price)/mid_price)/bucket_size)
                 #print(bucket)
-                if bucket in range(len(rows)):
+                if fits(bucket, rows):
                     rows[bucket] += bid_size
 
             for ask_price, ask_size in data[currKey][1]:
                 bucket = int(((ask_price - mid_price)/mid_price )/bucket_size)
                 #print(bucket + n_buckets)
-                if bucket + n_buckets in range(len(rows)):
+                if fits(bucket + n_buckets, rows):
                     rows[bucket + n_buckets] += ask_size
 
             ###print("!!!", currKey, nextKey)
 
             # poprawne dane - min ask > max bid
             if data[currKey][0][-1][0] <  data[currKey][1][0][0] and data[nextKey][0][-1][0] <  data[nextKey][1][0][0]:
-                #print "A"
                 growths.append(data[currKey][2] < data[nextKey][2])
                 rows /= rows.sum()
                 X.append(rows)
@@ -48,8 +44,8 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
             #print(rows.sum())
             #print(data[keys[i]])
     
-    print "SIZE", np.array(X).shape, np.array(growths).shape
-    #print np.array(X)[0,:]
+    print("SIZE", np.array(X).shape, np.array(growths).shape)
+    print(np.array(X)[0,:])
     return np.array(X), np.array(growths)
 
 

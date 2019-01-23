@@ -19,7 +19,7 @@ def main():
 
     print(X)
     print(Y)
-    classifier = MLPClassifier(solver='lbfgs', activation="relu", alpha=1e-4, hidden_layer_sizes=(500, 500, 500), max_iter=5000)
+    classifier = MLPClassifier(solver='lbfgs', activation="relu", alpha=1e-4, hidden_layer_sizes=(800, 800, 800), max_iter=200)
 
     n = len(Y)
     k = int(0.8 * n)
