@@ -38,7 +38,7 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
             ###print("!!!", currKey, nextKey)
 
             # poprawne dane - min ask > max bid
-            if data[currKey][0][-1][0] <  data[currKey][1][1][0] and data[nextKey][0][-1][0] <  data[nextKey][1][1][0]:
+            if data[currKey][0][-1][0] <  data[currKey][1][0][0] and data[nextKey][0][-1][0] <  data[nextKey][1][0][0]:
                 #print "A"
                 growths.append(data[currKey][2] < data[nextKey][2])
                 rows /= rows.sum()
