@@ -1,5 +1,7 @@
 import numpy as np
 
+from utils import Globals
+
 def fits(index, arr):
     return index >= 0 and index < len(arr)
 
@@ -44,9 +46,11 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
             #print(rows.sum())
             #print(data[keys[i]])
     
-    print("SIZE", np.array(X).shape, np.array(growths).shape)
-    print(np.array(X)[0,:])
-    return np.array(X), np.array(growths)
+    if Globals.debug:
+        print("SIZE", np.array(X).shape, np.array(growths).shape)
+        print(np.array(X)[0,:])
+
+    return np.array(X, dtype=np.float32), np.array(growths, dtype=np.int)
 
 
 

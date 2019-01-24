@@ -19,3 +19,24 @@ def confusion_matrix(prediction, true_vals, classes=None):
     
     return np.array(res)
 
+def partition(X, Y, test_size=0.8):
+    n = len(Y)
+    k = int(0.8 * n)
+    perm = np.random.permutation(n)
+
+
+    X = X[perm]
+    Y = Y[perm]
+    if Globals.debug:
+        print(X.shape)
+
+    return X[k:],Y[k:], X[:k], Y[:k]
+
+
+def accuracy(out, labels):
+    outputs = np.argmax(out, axis=1)
+    return np.sum(outputs==labels)/float(labels.size)
+
+
+class Globals(object):
+    debug = False
