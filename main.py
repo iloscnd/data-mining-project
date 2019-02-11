@@ -23,6 +23,7 @@ def get_args():
     parser.add_argument('--model', help="unused", default=None, nargs="?")
     parser.add_argument('--debug', dest='debug', action='store_true')
     parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--print_every', type=int, default=10 )
     parser.add_argument('--buckets', type=int, default=10)
     parser.add_argument('--bucket_size', type=float, default=0.04)
     parser.add_argument('--hidden', type=int, default=50 )
@@ -34,6 +35,7 @@ def get_args():
 
 
 def main():
+
     args = get_args()
     Globals.debug = args.debug
 
@@ -41,6 +43,7 @@ def main():
     input_size = args.buckets * 2
     hidden_size = args.hidden
     epochs = args.epochs
+    print_every = args.print_every
 
     X, Y = get_XY(parse(args.data), n_buckets=input_size//2, bucket_size=args.bucket_size)
 
@@ -60,14 +63,17 @@ def main():
     )
 
     ### zrownowazyc dane
-#    optimizer = optim.Adam(model.parameters(),lr=29, weight_decay=0.1)
+    #optimizer = optim.Adam(model.parameters(),lr=0.001, weight_decay=.3)
     optimizer = optim.LBFGS(model.parameters(), lr=1)
+    #optimizer = optim.Rprop(model.parameters(), lr=1)
     loss = nn.NLLLoss()
 
 
     trainer = Trainer(model, optimizer, loss)
 
-    trainer.run(X, Y, epochs)
+    trainer.run(X, Y, epochs, print_every)
+
+    
 
     ## save of sth
 
