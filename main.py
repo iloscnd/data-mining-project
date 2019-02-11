@@ -1,6 +1,8 @@
 import numpy as np
 import sys
 import random
+import argparse
+
 
 from parser import parse
 from preprocess import get_XY
@@ -12,18 +14,35 @@ import torch.nn as nn
 import torch.optim as optim
 
 
+
+def get_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--data', type=str, help="path to input data")
+    parser.add_argument('--save_dir', help="Save pre-trained models", default="models/", nargs="?")
+    parser.add_argument('--model', help="unused", default=None, nargs="?")
+    parser.add_argument('--debug', dest='debug', action='store_true')
+    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--buckets', type=int, default=10)
+    parser.add_argument('--bucket_size', type=float, default=0.04)
+    parser.add_argument('--hidden', type=int, default=50 )
+
+
+    return parser.parse_args()
+
+
+
+
 def main():
-    if(len(sys.argv) < 2):
-        return
+    args = get_args()
+    Globals.debug = args.debug
 
-    Globals.debug = True
 
-    file_name = sys.argv[1]
+    input_size = args.buckets * 2
+    hidden_size = args.hidden
+    epochs = args.epochs
 
-    input_size = 5 * 2
-    hidden_size = 20
-
-    X, Y = get_XY(parse(file_name), input_size//2)
+    X, Y = get_XY(parse(args.data), n_buckets=input_size//2, bucket_size=args.bucket_size)
 
 
     if Globals.debug:
@@ -32,18 +51,23 @@ def main():
 
     model = nn.Sequential(
         nn.Linear(input_size, hidden_size),
+        nn.ReLU(),
+        nn.Dropout(p=0.5, inplace=False),
+        nn.Linear(hidden_size, hidden_size),
         nn.Tanh(),
         nn.Linear(hidden_size, 2),
         nn.LogSoftmax()
     )
 
-    optimizer = optim.Adam(model.parameters(), weight_decay=0.1)
+    ### zrownowazyc dane
+#    optimizer = optim.Adam(model.parameters(),lr=29, weight_decay=0.1)
+    optimizer = optim.LBFGS(model.parameters(), lr=1)
     loss = nn.NLLLoss()
 
 
     trainer = Trainer(model, optimizer, loss)
 
-    trainer.run(X, Y, 100)
+    trainer.run(X, Y, epochs)
 
     ## save of sth
 

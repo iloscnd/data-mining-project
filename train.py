@@ -35,7 +35,7 @@ class Trainer:
             train_pred = self.model(X_train)
             train_loss = self.loss(train_pred, Y_train)
             train_loss.backward()
-            self.optimizer.step()
+            self.optimizer.step(lambda: -train_loss)
             
             self.model.eval() ## torch.no_grad nie działa na mojej wersji pytrocha
 
@@ -44,7 +44,7 @@ class Trainer:
             val_pred =self.model(X_val)
             #print(val_pred.shape)
 
-            print( "\tTrain loss: {}, Validation loss: {}".format( train_loss.item(), test_loss.item() ))
+            print( "\tTrain loss: {}, \tValidation loss: {}".format( train_loss.item(), test_loss.item() ))
         
             if Globals.debug:
                 print("\tTrain acc: {} \tValidation acc: {}".format(accuracy(train_pred.data.numpy(), Y_train.data.numpy()), accuracy(val_pred.data.numpy(), Y_val.data.numpy())))
