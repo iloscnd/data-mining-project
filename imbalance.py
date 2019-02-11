@@ -34,7 +34,7 @@ def prep_data(data, train_size=0.8):
     growths = growths[perm]
 
 
-    print(imbalances, growths)
+    #print(imbalances, growths)
     return imbalances[:k], growths[:k], imbalances[k:], growths[k:]
 
 
