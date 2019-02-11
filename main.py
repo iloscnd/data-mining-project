@@ -6,7 +6,7 @@ import argparse
 
 from parser import parse
 from preprocess import get_XY
-from utils import confusion_matrix, Globals
+from utils import confusion_matrix, Globals, accuracy
 from train import Trainer
 
 import torch
@@ -22,6 +22,7 @@ def get_args():
     parser.add_argument('--save_dir', help="Save pre-trained models", default="models/", nargs="?")
     parser.add_argument('--model', help="unused", default=None, nargs="?")
     parser.add_argument('--debug', dest='debug', action='store_true')
+    parser.add_argument('--eval', dest='eval', action='store_true')
     parser.add_argument('--epochs', type=int, default=100)
     parser.add_argument('--buckets', type=int, default=10)
     parser.add_argument('--bucket_size', type=float, default=0.04)
@@ -61,15 +62,25 @@ def main():
 
     ### zrownowazyc dane
 #    optimizer = optim.Adam(model.parameters(),lr=29, weight_decay=0.1)
-    optimizer = optim.LBFGS(model.parameters(), lr=1)
     loss = nn.NLLLoss()
 
+    if args.eval:
+        model.load_state_dict(torch.load(args.save_dir + "model"))
+        model.eval()
+        X = torch.from_numpy(X)
+        Y = torch.from_numpy(Y)
+        pred = model(X)
+        loss = loss(pred, Y)
+        print( "Loss: {}".format( loss.item() ))
+        print("Acc: {}".format(accuracy(pred.data.numpy(), Y.data.numpy())))
 
-    trainer = Trainer(model, optimizer, loss)
+    else:
+        optimizer = optim.LBFGS(model.parameters(), lr=1)
+        trainer = Trainer(model, optimizer, loss)
+        trainer.run(X, Y, epochs, args.save_dir)
 
-    trainer.run(X, Y, epochs)
 
-    ## save of sth
+
 
 
 if __name__ == "__main__":

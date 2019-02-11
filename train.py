@@ -15,7 +15,7 @@ class Trainer:
         self.loss = loss
 
 
-    def run(self, X, Y, num_epochs):
+    def run(self, X, Y, num_epochs, save_path):
         
         X_train, Y_train, X_val, Y_val = partition(X,Y)
         X_train = torch.from_numpy(X_train)
@@ -24,8 +24,9 @@ class Trainer:
         Y_val = torch.from_numpy(Y_val)
 
         self.model.train()
+    
+        best = 10e18
 
-        print(self.model)
 
         for epoch in range(num_epochs):
 
@@ -49,6 +50,9 @@ class Trainer:
             if Globals.debug:
                 print("\tTrain acc: {} \tValidation acc: {}".format(accuracy(train_pred.data.numpy(), Y_train.data.numpy()), accuracy(val_pred.data.numpy(), Y_val.data.numpy())))
 
+            if best > test_loss.item():
+                best = test_loss.item()
+                torch.save(self.model.state_dict(), save_path+"model")
 
             self.model.train()
 
