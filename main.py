@@ -56,19 +56,22 @@ def main():
         nn.Linear(input_size, hidden_size),
         nn.ReLU(),
         nn.Dropout(p=0.5, inplace=False),
-        nn.Linear(hidden_size, 2),
+        nn.Linear(hidden_size, hidden_size//4),
         nn.ReLU(),
+        nn.Linear(hidden_size//4, 2),
         nn.LogSoftmax()
     )
 
     ### zrownowazyc dane
-    optimizer = optim.Adam(model.parameters(),lr=0.01, weight_decay=0.)
-    #optimizer = optim.LBFGS(model.parameters(), max_iter=50)
-    #optimizer = optim.Rprop(model.parameters(), lr=10)
+    optimizer = optim.Adam(model.parameters(),lr=1, weight_decay=0.1)
+    #optimizer = optim.LBFGS(model.parameters(), lr=1000., max_iter=50)
+    #optimizer = optim.Rprop(model.parameters(), lr=0.1)
+    #optimizer = optim.Adam(model.parameters(), weight_decay=0.1, lr=10)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, 20, gamma=0.1)
     loss = nn.NLLLoss()
 
 
-    trainer = Trainer(model, optimizer, loss)
+    trainer = Trainer(model, optimizer, scheduler, loss)
 
     trainer.run(X, Y, epochs, print_every)
 

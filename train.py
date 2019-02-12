@@ -5,15 +5,18 @@ from torch.utils import data
 
 import numpy as np
 
+import utils
+
 from utils import partition, accuracy, Globals
 from sklearn import neural_network
 
 class Trainer:
 
-    def __init__(self, model, optimizer, loss):
+    def __init__(self, model, optimizer, scheduler, loss):
         self.model = model
 
         self.optimizer = optimizer
+        self.scheduler = scheduler
         self.loss = loss
 
     def reevLoss(self, Xtr, Ytr):
@@ -75,6 +78,10 @@ class Trainer:
 
         for epoch in range(num_epochs):
 
+            self.scheduler.step()
+
+            self.model.train()
+
             self.optimizer.zero_grad()
             train_pred = self.model.forward(X_train)
             train_loss = self.loss(train_pred, Y_train)
@@ -85,20 +92,24 @@ class Trainer:
 
             test_loss = self.loss(self.model(X_val), Y_val)
 
-            val_pred =self.model(X_val)
+            val_pred =self.model.forward(X_val)
             #print(val_pred.shape)
 
             if not (epoch % print_every) or epoch + 1 == num_epochs:
 
                 print("EPOCH #", epoch)
 
+                #print( "\tLR: {}".format(self.optimizer.state) )
+
                 print( "\tTrain loss: {}, \tValidation loss: {}".format( train_loss.item(), test_loss.item() ))
         
                 if Globals.debug:
                     print("\tTrain acc: {} \tValidation acc: {}".format(accuracy(train_pred.data.numpy(), Y_train.data.numpy()), accuracy(val_pred.data.numpy(), Y_val.data.numpy())))
+                    print(utils.confusion_matrix(np.argmax(train_pred.data.numpy(), axis=1), Y_train.data.numpy()))
+                    print(utils.confusion_matrix(np.argmax(val_pred.data.numpy(), axis=1), Y_val.data.numpy()))
 
 
-            self.model.train()
+            
 
 
 
