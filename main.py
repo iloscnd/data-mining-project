@@ -67,7 +67,7 @@ def main():
     #optimizer = optim.LBFGS(model.parameters(), lr=1000., max_iter=50)
     #optimizer = optim.Rprop(model.parameters(), lr=0.1)
     #optimizer = optim.Adam(model.parameters(), weight_decay=0.1, lr=10)
-    scheduler = optim.lr_scheduler.StepLR(optimizer, 20, gamma=0.1)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, 10, gamma=0.4)
 
     loss = nn.NLLLoss()
 
