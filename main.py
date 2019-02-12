@@ -46,7 +46,7 @@ def main():
     epochs = args.epochs
     print_every = args.print_every
 
-    X, Y = get_XY(parse(args.data), n_buckets=input_size//2, bucket_size=args.bucket_size)
+    (X, Y), _ = get_XY(parse(args.data), n_buckets=input_size//2, bucket_size=args.bucket_size)
 
     if args.save_path is None:
         set_number = args.data[args.data.find('.')+1:args.data.rfind('.')]
@@ -61,7 +61,7 @@ def main():
     model = nn.Sequential(
         nn.Linear(input_size, hidden_size),
         nn.Tanh(),
-        nn.Dropout(p=0.2, inplace=False),
+        nn.Dropout(p=0.6, inplace=False),
         nn.Linear(hidden_size, hidden_size//4),
         nn.ReLU(),
         nn.Linear(hidden_size//4, 2)
@@ -96,7 +96,7 @@ def main():
             model = nn.Sequential(
                 nn.Linear(input_size, hidden_size),
                 nn.Tanh(),
-                nn.Dropout(p=0.2, inplace=False),
+                nn.Dropout(p=0.6, inplace=False),
                 nn.Linear(hidden_size, hidden_size//4),
                 nn.ReLU(),
                 nn.Linear(hidden_size//4, 2)

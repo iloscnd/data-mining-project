@@ -100,7 +100,12 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
         print("SIZE", np.array(X).shape, np.array(growths).shape)
         print(np.array(X)[0,:])
 
-    return np.array(X, dtype=np.float32), np.array(growths, dtype=np.int)
+    X = np.array(X, dtype=np.float32)
+    Y = np.array(growths, dtype=np.int)
+
+    test_size =  len(Y)//8
+
+    return (X[test_size:], Y[test_size:]), (X[:test_size], Y[:test_size])
 
 
 
