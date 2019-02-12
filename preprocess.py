@@ -11,6 +11,10 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
     keys = list(data.keys())
     keys.sort()
 
+    
+    bad0 = 0
+    bad1 = 0
+
     growths = []
     X = []
 
@@ -29,6 +33,7 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
         
 
         if currh < 900 or currh > 1600 or currh + 1 != nexth:
+            bad0 += 1
             continue
 
         #print(currh, nexth)
@@ -74,12 +79,18 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
                 growths.append(data[currKey][2] < data[nextKey][2])
                 rows /= rows.sum() #norm
                 X.append(rows)
+            else:
+                bad1 += 1
 
                 #print(rows)
             #print(rows.sum())
             #print(data[keys[i]])
+
+    
     
     if Globals.debug:
+        print("DATA LEN: ", len(data.keys()))
+        print("BAD: ", bad0, bad1)
         print("SIZE", np.array(X).shape, np.array(growths).shape)
         print(np.array(X)[0,:])
 

@@ -25,7 +25,7 @@ class Trainer:
 
     def run(self, X, Y, num_epochs, print_every):
         
-        X_train, Y_train, X_val, Y_val = partition(X,Y)
+        X_val, Y_val, X_train, Y_train = partition(X,Y)
         X_train = torch.from_numpy(X_train)
         Y_train = torch.from_numpy(Y_train)
         X_val = torch.from_numpy(X_val)
@@ -60,7 +60,7 @@ class Trainer:
         y0 = np.sum(np.array(Y_train)==0)
         y1 = np.sum(np.array(Y_train)==1)
         ###print("!!!",y0,y1)
-        ###print(X_train.shape, Y_train.shape)
+        print(X_train.shape, Y_train.shape)
 
         #classifier = neural_network.MLPClassifier(max_iter = 200000).fit(X_train, Y_train)
         #print(classifier.score(X_val, Y_val))
