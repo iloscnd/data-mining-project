@@ -20,6 +20,7 @@ def get_args():
 
     parser.add_argument('--data', type=str, help="path to input data")
     parser.add_argument('--save_path', help="Save pre-trained models", default=None, nargs="?")
+    parser.add_argument('--log_path', help="Where to save logs. No logs if unset", default=None, nargs="?")
     parser.add_argument('--model', help="unused", default=None, nargs="?")
     parser.add_argument('--debug', dest='debug', action='store_true')
     parser.add_argument('--eval', dest='eval', action='store_true')
@@ -39,7 +40,9 @@ def main():
 
     args = get_args()
     Globals.debug = args.debug
-
+    if args.log_path:
+        Globals.log_file = open(args.log_path, "w")
+        print("Train_loss, Validation_loss, Train_acc, Validation_acc", file=Globals.log_file)
 
     input_size = args.buckets * 2
     hidden_size = args.hidden

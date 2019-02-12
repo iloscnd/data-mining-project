@@ -40,3 +40,4 @@ def accuracy(out, labels):
 
 class Globals(object):
     debug = False
+    log_file = None

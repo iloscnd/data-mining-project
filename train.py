@@ -90,6 +90,14 @@ class Trainer:
                 val_pred =self.model.forward(X_val)
                 test_loss = self.loss(val_pred, Y_val)
 
+                if Globals.log_file:
+                    print(train_loss.item(),
+                          test_loss.item(),
+                          accuracy(train_pred.data.numpy(), Y_train.data.numpy()), 
+                          accuracy(val_pred.data.numpy(), Y_val.data.numpy()),
+                          sep=", ", 
+                          file=Globals.log_file)
+
                 if not (epoch % print_every) or epoch + 1 == num_epochs:
 
                     print("EPOCH #", epoch)
