@@ -19,7 +19,7 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--data', type=str, help="path to input data")
-    parser.add_argument('--save_dir', help="Save pre-trained models", default="models/", nargs="?")
+    parser.add_argument('--save_path', help="Save pre-trained models", default=None, nargs="?")
     parser.add_argument('--model', help="unused", default=None, nargs="?")
     parser.add_argument('--debug', dest='debug', action='store_true')
     parser.add_argument('--eval', dest='eval', action='store_true')
@@ -48,19 +48,23 @@ def main():
 
     X, Y = get_XY(parse(args.data), n_buckets=input_size//2, bucket_size=args.bucket_size)
 
+    if args.save_path is None:
+        set_number = args.data[args.data.find('.')+1:args.data.rfind('.')]
+        args.save_path = "models/model"+ set_number
+
 
     if Globals.debug:
         print(X)
         print(Y)
+        print(args.save_path)
 
     model = nn.Sequential(
         nn.Linear(input_size, hidden_size),
         nn.Tanh(),
-        nn.Dropout(p=0.6, inplace=False),
+        nn.Dropout(p=0.2, inplace=False),
         nn.Linear(hidden_size, hidden_size//4),
         nn.ReLU(),
-        nn.Linear(hidden_size//4, 2),
-        nn.LogSoftmax()
+        nn.Linear(hidden_size//4, 2)
     )
 
     optimizer = optim.Adam(model.parameters(),lr=1., weight_decay=1.)
@@ -69,7 +73,7 @@ def main():
     #optimizer = optim.Adam(model.parameters(), weight_decay=0.1, lr=10)
     scheduler = optim.lr_scheduler.StepLR(optimizer, 10, gamma=0.4)
 
-    loss = nn.NLLLoss()
+    loss = nn.CrossEntropyLoss()
 
     if args.eval:
         model.load_state_dict(torch.load(args.save_dir + "model"))
@@ -92,22 +96,21 @@ def main():
             model = nn.Sequential(
                 nn.Linear(input_size, hidden_size),
                 nn.Tanh(),
-                nn.Dropout(p=0.6, inplace=False),
+                nn.Dropout(p=0.2, inplace=False),
                 nn.Linear(hidden_size, hidden_size//4),
                 nn.ReLU(),
-                nn.Linear(hidden_size//4, 2),
-                nn.LogSoftmax()
+                nn.Linear(hidden_size//4, 2)
             )
 
             optimizer = optim.Adam(model.parameters(),lr=1., weight_decay=1.)
             #optimizer = optim.LBFGS(model.parameters(), lr=1000., max_iter=50)
             #optimizer = optim.Rprop(model.parameters(), lr=0.1)
             #optimizer = optim.Adam(model.parameters(), weight_decay=0.1, lr=10)
-            scheduler = optim.lr_scheduler.StepLR(optimizer, 10, gamma=0.4)
+            scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.4)
 
 
             trainer = Trainer(model, optimizer, scheduler, loss)
-            best = trainer.run(X, Y, epochs,print_every, args.save_dir, best)
+            best = trainer.run(X, Y, epochs,print_every, args.save_path, best)
 
 
 

@@ -73,15 +73,9 @@ class Trainer:
     
         best = prev_best
 
-
-        #ds = data.Dataset(X_train, Y_train)
-        #dl = data.DataLoader(ds, shuffle = True)
-
         for epoch in range(num_epochs):
 
             self.scheduler.step()
-
-            self.model.train()
 
             self.optimizer.zero_grad()
             train_pred = self.model.forward(X_train)
@@ -90,34 +84,29 @@ class Trainer:
 
             self.optimizer.step()
             
-            #self.model.eval() ## torch.no_grad nie działa na mojej wersji pytrocha
-
             with torch.no_grad():
 
-                test_loss = self.loss(self.model(X_val), Y_val)
 
-                #print("!!!", test_loss.item())
                 val_pred =self.model.forward(X_val)
-
-                #print(val_pred.shape)
+                test_loss = self.loss(val_pred, Y_val)
 
                 if not (epoch % print_every) or epoch + 1 == num_epochs:
 
                     print("EPOCH #", epoch)
 
-                    #print( "\tLR: {}".format(self.optimizer.state) )
-
                     print( "\tTrain loss: {}, \tValidation loss: {}".format( train_loss.item(), test_loss.item() ))
             
                     if Globals.debug:
                         print("\tTrain acc: {} \tValidation acc: {}".format(accuracy(train_pred.data.numpy(), Y_train.data.numpy()), accuracy(val_pred.data.numpy(), Y_val.data.numpy())))
+                        print("\tTrain confusion matrix:")
                         print(utils.confusion_matrix(np.argmax(train_pred.data.numpy(), axis=1), Y_train.data.numpy()))
+                        print("\tValidation confusion matrix:")
                         print(utils.confusion_matrix(np.argmax(val_pred.data.numpy(), axis=1), Y_val.data.numpy()))
 
                 if best > test_loss.item() and epoch > num_epochs*4./5.:
                     best = test_loss.item()
                     print("\tNEW best val loss: {}".format(best))
-                    torch.save(self.model.state_dict(), save_path+"model")
+                    torch.save(self.model.state_dict(), save_path)
 
         return best
 

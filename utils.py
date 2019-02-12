@@ -6,7 +6,7 @@ import numpy as np
 def confusion_matrix(prediction, true_vals, classes=None):
     if classes is None:
         classes = np.unique(true_vals, axis=0)
-        
+
 
     res = []
 
@@ -21,7 +21,7 @@ def confusion_matrix(prediction, true_vals, classes=None):
 
 def partition(X, Y, test_size=0.8):
     n = len(Y)
-    k = int(0.8 * n)
+    k = int(test_size * n)
     perm = np.random.permutation(n)
 
 
