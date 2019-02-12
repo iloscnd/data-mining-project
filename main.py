@@ -62,9 +62,9 @@ def main():
     )
 
     ### zrownowazyc dane
-    #optimizer = optim.Adam(model.parameters(),lr=0.0001, weight_decay=.1)
+    optimizer = optim.Adam(model.parameters(),lr=0.01, weight_decay=0.)
     #optimizer = optim.LBFGS(model.parameters(), max_iter=50)
-    optimizer = optim.Rprop(model.parameters(), lr=0.001)
+    #optimizer = optim.Rprop(model.parameters(), lr=10)
     loss = nn.NLLLoss()
 
 

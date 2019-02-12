@@ -76,7 +76,7 @@ class Trainer:
         for epoch in range(num_epochs):
 
             self.optimizer.zero_grad()
-            train_pred = self.model(X_train)
+            train_pred = self.model.forward(X_train)
             train_loss = self.loss(train_pred, Y_train)
             train_loss.backward()
             self.optimizer.step()#lambda: ((lambda obj, xs, ys: obj.reevLoss(xs, ys))(self, X_train, Y_train)))  #train_loss)

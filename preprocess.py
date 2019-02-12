@@ -41,6 +41,7 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
         #norm = 0.
 
         if not omit_no_change or data[nextKey][2] != data[currKey][2]:
+            rows0 = np.zeros(2*n_buckets)
             rows = np.zeros(2*n_buckets)
             
             mid_price = data[currKey][2]
@@ -49,28 +50,31 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
 
             #print(mid_price)
             for bid_price, bid_size in reversed(data[currKey][0]):
-                ###bucket = int(( n_buckets*bucket_size -  (mid_price-bid_price)/mid_price)/bucket_size)
+                bucket = int(( n_buckets*bucket_size -  (mid_price-bid_price)/mid_price)/bucket_size)
                 #print(bucket)
-                ###if fits(bucket, rows):
-                ###    rows[bucket] += bid_size
-                #norm += bid_size
-                norm = 0.
-                for i in range(len(rows)//2):
-                    norm += 1. / max((abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.5)
-                for i in range(len(rows)//2):
-                    rows[i] += bid_size* ( max((abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.5) / norm )
+                if fits(bucket, rows):
+                    rows0[bucket] += bid_size
+                    #norm += bid_size
+                    norm = 0.
+                    for i in range(len(rows)//2):
+                        norm += 1. / max(1.*(abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.25)
+                    check = 0.
+                    for i in range(len(rows)//2):
+                        rows[i] += bid_size* ( (1./max((abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.25)) / norm )
+                        check += ( (1./max(1.*(abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.25)) / norm )
+                #print(":::",check)
 
             for ask_price, ask_size in data[currKey][1]:
-                ###bucket = int(((ask_price - mid_price)/mid_price )/bucket_size)
+                bucket = int(((ask_price - mid_price)/mid_price )/bucket_size)
                 #print(bucket + n_buckets)
-                ###if fits(bucket + n_buckets, rows):
-                ###    rows[bucket + n_buckets] += ask_size
-                #norm += bid_size
-                norm = 0.
-                for i in range(len(rows)//2):
-                    norm += 1. / max((abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.5)
-                for i in range(len(rows)//2):
-                    rows[i] += bid_size* ( max((abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.5) / norm )
+                if fits(bucket + n_buckets, rows):
+                    rows0[bucket + n_buckets] += ask_size
+                    #norm += bid_size
+                    norm = 0.
+                    for i in range(len(rows)//2, len(rows)):
+                        norm += 1. / max(1.*(abs(centers[i]-ask_price)/(mid_price*bucket_size))**2., 0.25)
+                    for i in range(len(rows)//2, len(rows)):
+                        rows[i] += ask_size* ( (1./max(1.*(abs(centers[i]-ask_price)/(mid_price*bucket_size))**2., 0.25)) / norm )
 
             ###print("!!!", currKey, nextKey)
 
@@ -78,6 +82,8 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
             if data[currKey][0][-1][0] <  data[currKey][1][0][0] and data[nextKey][0][-1][0] <  data[nextKey][1][0][0]:
                 growths.append(data[currKey][2] < data[nextKey][2])
                 rows /= rows.sum() #norm
+                rows0 /= rows0.sum()
+                ###print("!", rows, rows0)
                 X.append(rows)
             else:
                 bad1 += 1
