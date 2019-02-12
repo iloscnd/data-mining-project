@@ -26,7 +26,7 @@ class Trainer:
         loss.backward()
         return loss
 
-    def run(self, X, Y, num_epochs,print_every, save_path):
+    def run(self, X, Y, num_epochs,print_every, save_path, prev_best):
         
         X_train, Y_train, X_val, Y_val = partition(X,Y, test_size=0.5)
         X_train = torch.from_numpy(X_train)
@@ -71,7 +71,7 @@ class Trainer:
 
         self.model.train()
     
-        best = 10e18
+        best = prev_best
 
 
         #ds = data.Dataset(X_train, Y_train)
@@ -114,10 +114,12 @@ class Trainer:
                         print(utils.confusion_matrix(np.argmax(train_pred.data.numpy(), axis=1), Y_train.data.numpy()))
                         print(utils.confusion_matrix(np.argmax(val_pred.data.numpy(), axis=1), Y_val.data.numpy()))
 
-                if best > test_loss.item() and epoch > num_epochs*3./4.:
+                if best > test_loss.item() and epoch > num_epochs*4./5.:
                     best = test_loss.item()
                     print("\tNEW best val loss: {}".format(best))
                     torch.save(self.model.state_dict(), save_path+"model")
+
+        return best
 
             
 

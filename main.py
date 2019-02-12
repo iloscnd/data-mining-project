@@ -84,8 +84,30 @@ def main():
     else:
         #optimizer = optim.Adam(model.parameters(),lr=0.001, weight_decay=0.2)
 #        optimizer = optim.LBFGS(model.parameters(), lr=1)
-        trainer = Trainer(model, optimizer, scheduler, loss)
-        trainer.run(X, Y, epochs,print_every, args.save_dir)
+
+        best = 10e18
+
+        for i in range(1):
+
+            model = nn.Sequential(
+                nn.Linear(input_size, hidden_size),
+                nn.Tanh(),
+                nn.Dropout(p=0.6, inplace=False),
+                nn.Linear(hidden_size, hidden_size//4),
+                nn.ReLU(),
+                nn.Linear(hidden_size//4, 2),
+                nn.LogSoftmax()
+            )
+
+            optimizer = optim.Adam(model.parameters(),lr=1., weight_decay=1.)
+            #optimizer = optim.LBFGS(model.parameters(), lr=1000., max_iter=50)
+            #optimizer = optim.Rprop(model.parameters(), lr=0.1)
+            #optimizer = optim.Adam(model.parameters(), weight_decay=0.1, lr=10)
+            scheduler = optim.lr_scheduler.StepLR(optimizer, 10, gamma=0.4)
+
+
+            trainer = Trainer(model, optimizer, scheduler, loss)
+            best = trainer.run(X, Y, epochs,print_every, args.save_dir, best)
 
 
 
