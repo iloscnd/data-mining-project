@@ -56,16 +56,19 @@ def main():
         nn.Linear(input_size, hidden_size),
         nn.ReLU(),
         nn.Dropout(p=0.5, inplace=False),
-        nn.Linear(hidden_size, hidden_size),
+        nn.Linear(hidden_size, hidden_size//2),
+        nn.ReLU(),
+        nn.Linear(hidden_size//2, hidden_size//4),
         nn.Tanh(),
-        nn.Linear(hidden_size, 2),
+        nn.Dropout(p=0.5, inplace=False),
+        nn.Linear(hidden_size//4, 2),
         nn.LogSoftmax()
     )
 
     ### zrownowazyc dane
-    #optimizer = optim.Adam(model.parameters(),lr=0.001, weight_decay=.3)
-    optimizer = optim.LBFGS(model.parameters(), lr=1)
-    #optimizer = optim.Rprop(model.parameters(), lr=1)
+    #optimizer = optim.Adam(model.parameters(),lr=0.01, weight_decay=.3)
+    optimizer = optim.LBFGS(model.parameters(), max_iter=50)
+    #optimizer = optim.Rprop(model.parameters(), lr=0.1)
     loss = nn.NLLLoss()
 
 

@@ -16,9 +16,10 @@ class Trainer:
         self.loss = loss
 
     def reevLoss(self, Xtr, Ytr):
+        self.optimizer.zero_grad()
         loss = self.loss(self.model(Xtr), Ytr)
         #print("!!!", loss)
-        #loss.backward()
+        loss.backward()
         return loss
 
     def run(self, X, Y, num_epochs, print_every):

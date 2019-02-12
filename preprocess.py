@@ -49,8 +49,11 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
                 ###if fits(bucket, rows):
                 ###    rows[bucket] += bid_size
                 #norm += bid_size
+                norm = 0.
                 for i in range(len(rows)//2):
-                    rows[i] += bid_size / max(abs(centers[i]-bid_price)/(mid_price*bucket_size), 0.5)
+                    norm += 1. / max((abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.5)
+                for i in range(len(rows)//2):
+                    rows[i] += bid_size* ( max((abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.5) / norm )
 
             for ask_price, ask_size in data[currKey][1]:
                 ###bucket = int(((ask_price - mid_price)/mid_price )/bucket_size)
@@ -58,8 +61,11 @@ def get_XY(data, n_buckets=5, bucket_size=0.05 , omit_no_change=True):
                 ###if fits(bucket + n_buckets, rows):
                 ###    rows[bucket + n_buckets] += ask_size
                 #norm += bid_size
-                for i in range(len(rows)//2, len(rows)):
-                    rows[i] += bid_size / max(abs(centers[i]-bid_price)/(mid_price*bucket_size), 0.5)
+                norm = 0.
+                for i in range(len(rows)//2):
+                    norm += 1. / max((abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.5)
+                for i in range(len(rows)//2):
+                    rows[i] += bid_size* ( max((abs(centers[i]-bid_price)/(mid_price*bucket_size))**2., 0.5) / norm )
 
             ###print("!!!", currKey, nextKey)
 
