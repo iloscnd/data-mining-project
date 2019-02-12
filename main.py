@@ -78,7 +78,7 @@ def main():
 
     loss = nn.CrossEntropyLoss()
 
-    if args.eval:
+    if args.eval:  # dokładność na całym zbiorze, nie tylko części testowej, nie użyte w raporcie
         model.load_state_dict(torch.load(args.save_dir + "model"))
         model.eval()
         X = torch.from_numpy(X)
