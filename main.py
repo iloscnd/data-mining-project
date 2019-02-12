@@ -52,7 +52,16 @@ def main():
 
     model = nn.Sequential(
         nn.Linear(input_size, hidden_size),
-        nn.ReLU(),
+        nn.Tanh(),
+        nn.Dropout(p=0.6, inplace=False),
+        nn.Linear(hidden_size, hidden_size),
+        nn.Tanh(),
+        nn.Dropout(p=0.6, inplace=False),
+        nn.Linear(hidden_size, hidden_size),
+        nn.Tanh(),
+        nn.Dropout(p=0.6, inplace=False),
+        nn.Linear(hidden_size, hidden_size),
+        nn.Tanh(),
         nn.Dropout(p=0.5, inplace=False),
         nn.Linear(hidden_size, hidden_size),
         nn.Tanh(),
@@ -60,8 +69,6 @@ def main():
         nn.LogSoftmax()
     )
 
-    ### zrownowazyc dane
-#    optimizer = optim.Adam(model.parameters(),lr=29, weight_decay=0.1)
     loss = nn.NLLLoss()
 
     if args.eval:
@@ -71,11 +78,12 @@ def main():
         Y = torch.from_numpy(Y)
         pred = model(X)
         loss = loss(pred, Y)
-        print( "Loss: {}".format( loss.item() ))
+        print("Loss: {}".format(loss.item()))
         print("Acc: {}".format(accuracy(pred.data.numpy(), Y.data.numpy())))
 
     else:
-        optimizer = optim.LBFGS(model.parameters(), lr=1)
+        optimizer = optim.Adam(model.parameters(),lr=0.1, weight_decay=0.2)
+#        optimizer = optim.LBFGS(model.parameters(), lr=1)
         trainer = Trainer(model, optimizer, loss)
         trainer.run(X, Y, epochs, args.save_dir)
 

@@ -36,7 +36,7 @@ class Trainer:
             train_pred = self.model(X_train)
             train_loss = self.loss(train_pred, Y_train)
             train_loss.backward()
-            self.optimizer.step(lambda: -train_loss)
+            self.optimizer.step()
             
             self.model.eval() ## torch.no_grad nie działa na mojej wersji pytrocha
 
