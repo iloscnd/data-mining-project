@@ -94,7 +94,7 @@ def main():
 
         best = 10e18
 
-        for i in range(1):
+        for _ in range(10):
 
             model = nn.Sequential(
                 nn.Linear(input_size, hidden_size),
