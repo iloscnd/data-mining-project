@@ -28,7 +28,7 @@ class Trainer:
 
     def run(self, X, Y, num_epochs,print_every, save_path):
         
-        X_val, Y_val, X_train, Y_train = partition(X,Y)
+        X_train, Y_train, X_val, Y_val = partition(X,Y, test_size=0.5)
         X_train = torch.from_numpy(X_train)
         Y_train = torch.from_numpy(Y_train)
         X_val = torch.from_numpy(X_val)
@@ -90,29 +90,34 @@ class Trainer:
 
             self.optimizer.step()
             
-            self.model.eval() ## torch.no_grad nie działa na mojej wersji pytrocha
+            #self.model.eval() ## torch.no_grad nie działa na mojej wersji pytrocha
 
-            test_loss = self.loss(self.model(X_val), Y_val)
+            with torch.no_grad():
 
-            val_pred =self.model.forward(X_val)
-            #print(val_pred.shape)
+                test_loss = self.loss(self.model(X_val), Y_val)
 
-            if not (epoch % print_every) or epoch + 1 == num_epochs:
+                #print("!!!", test_loss.item())
+                val_pred =self.model.forward(X_val)
 
-                print("EPOCH #", epoch)
+                #print(val_pred.shape)
 
-                #print( "\tLR: {}".format(self.optimizer.state) )
+                if not (epoch % print_every) or epoch + 1 == num_epochs:
 
-                print( "\tTrain loss: {}, \tValidation loss: {}".format( train_loss.item(), test_loss.item() ))
-        
-                if Globals.debug:
-                    print("\tTrain acc: {} \tValidation acc: {}".format(accuracy(train_pred.data.numpy(), Y_train.data.numpy()), accuracy(val_pred.data.numpy(), Y_val.data.numpy())))
-                    print(utils.confusion_matrix(np.argmax(train_pred.data.numpy(), axis=1), Y_train.data.numpy()))
-                    print(utils.confusion_matrix(np.argmax(val_pred.data.numpy(), axis=1), Y_val.data.numpy()))
+                    print("EPOCH #", epoch)
 
-            if best > test_loss.item():
-                best = test_loss.item()
-                torch.save(self.model.state_dict(), save_path+"model")
+                    #print( "\tLR: {}".format(self.optimizer.state) )
+
+                    print( "\tTrain loss: {}, \tValidation loss: {}".format( train_loss.item(), test_loss.item() ))
+            
+                    if Globals.debug:
+                        print("\tTrain acc: {} \tValidation acc: {}".format(accuracy(train_pred.data.numpy(), Y_train.data.numpy()), accuracy(val_pred.data.numpy(), Y_val.data.numpy())))
+                        print(utils.confusion_matrix(np.argmax(train_pred.data.numpy(), axis=1), Y_train.data.numpy()))
+                        print(utils.confusion_matrix(np.argmax(val_pred.data.numpy(), axis=1), Y_val.data.numpy()))
+
+                if best > test_loss.item() and epoch > num_epochs*3./4.:
+                    best = test_loss.item()
+                    print("\tNEW best val loss: {}".format(best))
+                    torch.save(self.model.state_dict(), save_path+"model")
 
             
 
