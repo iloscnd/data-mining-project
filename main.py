@@ -24,6 +24,7 @@ def get_args():
     parser.add_argument('--debug', dest='debug', action='store_true')
     parser.add_argument('--eval', dest='eval', action='store_true')
     parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--print_every', type=int, default=10 )
     parser.add_argument('--buckets', type=int, default=10)
     parser.add_argument('--bucket_size', type=float, default=0.04)
     parser.add_argument('--hidden', type=int, default=50 )
@@ -35,6 +36,7 @@ def get_args():
 
 
 def main():
+
     args = get_args()
     Globals.debug = args.debug
 
@@ -42,6 +44,7 @@ def main():
     input_size = args.buckets * 2
     hidden_size = args.hidden
     epochs = args.epochs
+    print_every = args.print_every
 
     X, Y = get_XY(parse(args.data), n_buckets=input_size//2, bucket_size=args.bucket_size)
 
@@ -63,11 +66,17 @@ def main():
         nn.Linear(hidden_size, hidden_size),
         nn.Tanh(),
         nn.Dropout(p=0.5, inplace=False),
-        nn.Linear(hidden_size, hidden_size),
-        nn.Tanh(),
-        nn.Linear(hidden_size, 2),
+        nn.Linear(hidden_size, hidden_size//4),
+        nn.ReLU(),
+        nn.Linear(hidden_size//4, 2),
         nn.LogSoftmax()
     )
+
+    optimizer = optim.Adam(model.parameters(),lr=1, weight_decay=0.1)
+    #optimizer = optim.LBFGS(model.parameters(), lr=1000., max_iter=50)
+    #optimizer = optim.Rprop(model.parameters(), lr=0.1)
+    #optimizer = optim.Adam(model.parameters(), weight_decay=0.1, lr=10)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, 20, gamma=0.1)
 
     loss = nn.NLLLoss()
 
@@ -84,10 +93,8 @@ def main():
     else:
         optimizer = optim.Adam(model.parameters(),lr=0.1, weight_decay=0.2)
 #        optimizer = optim.LBFGS(model.parameters(), lr=1)
-        trainer = Trainer(model, optimizer, loss)
-        trainer.run(X, Y, epochs, args.save_dir)
-
-
+        trainer = Trainer(model, optimizer, scheduler, loss)
+        trainer.run(X, Y, epochs,print_every, args.save_dir)
 
 
 
