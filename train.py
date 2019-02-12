@@ -26,7 +26,7 @@ class Trainer:
         loss.backward()
         return loss
 
-    def run(self, X, Y, num_epochs, print_every):
+    def run(self, X, Y, num_epochs,print_every, save_path):
         
         X_val, Y_val, X_train, Y_train = partition(X,Y)
         X_train = torch.from_numpy(X_train)
@@ -70,8 +70,9 @@ class Trainer:
         #return
 
         self.model.train()
+    
+        best = 10e18
 
-        print(self.model)
 
         #ds = data.Dataset(X_train, Y_train)
         #dl = data.DataLoader(ds, shuffle = True)
@@ -86,7 +87,8 @@ class Trainer:
             train_pred = self.model.forward(X_train)
             train_loss = self.loss(train_pred, Y_train)
             train_loss.backward()
-            self.optimizer.step()#lambda: ((lambda obj, xs, ys: obj.reevLoss(xs, ys))(self, X_train, Y_train)))  #train_loss)
+
+            self.optimizer.step()
             
             self.model.eval() ## torch.no_grad nie działa na mojej wersji pytrocha
 
@@ -108,6 +110,9 @@ class Trainer:
                     print(utils.confusion_matrix(np.argmax(train_pred.data.numpy(), axis=1), Y_train.data.numpy()))
                     print(utils.confusion_matrix(np.argmax(val_pred.data.numpy(), axis=1), Y_val.data.numpy()))
 
+            if best > test_loss.item():
+                best = test_loss.item()
+                torch.save(self.model.state_dict(), save_path+"model")
 
             
 
