@@ -16,4 +16,4 @@ Aby uruchomić trenowanie sieci neuronej użyj komendy
 Wszystkie mozliwe komendy dostępne są po wpisaniu polecenia:  
 `python3 main.py -h`  
 Dołączone modele na których bazuje raport uruchomione są za pomocą komendy:  
-`python main.py --data sciezka_do_danych --debug --epochs 300 --bucket_size 0.04 --buckets 3 --hidden 1000`  
+`python main.py --data sciezka_do_danych --debug --epochs 300 --bucket_size 0.04 --buckets 4 --hidden 1000`  
