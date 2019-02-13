@@ -24,13 +24,14 @@ def prep_data(data, train_size=0.8):
 
         # odrzucamy dane z początku i końca dnia jako mało wiarygodne
         if currh < 900 or currh > 1600 or currh + 1 != nexth:
-            bad0 += 1
+            prev = key
             continue
 
         if data[prev][2] != data[key][2]: #only if mid-price changes
-            if data[prev][0][-1][0] <  data[prev][1][0][0] and data[key][0][-1][0] <  data[key][1][0][0]
-            growths.append(data[prev][2] < data[key][2])
-            imbalances.append(data[prev][3])
+            if data[prev][0][-1][0] <  data[prev][1][0][0] and data[key][0][-1][0] <  data[key][1][0][0]:
+                growths.append(data[prev][2] < data[key][2])
+                imbalances.append(data[prev][3])
+
         prev = key
 
     
